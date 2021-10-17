@@ -172,6 +172,8 @@ def make_institute_article_table():
         f"{PROJECT_DIR}/inputs/data/arxiv_institutes.csv", dtype={"article_id": str}
     )
 
+    ai_ids = set(get_arxiv_papers().query("is_ai==True")["article_id"])
+
     # We want one article x institution
     institute["name"] = institute["name"].apply(lambda x: x.split(" (")[0].strip())
     institute_deduped = institute.drop_duplicates(["article_id", "name"])
@@ -240,13 +242,15 @@ def make_institute_article_table():
         ]
     ).reset_index(drop=True)
 
+    institute_final["is_ai"] = institute_final["article_id"].isin(ai_ids)
+
     return institute_final
 
 
 def get_arxiv_papers():
 
     return pd.read_csv(
-        f"{PROJECT_DIR}/inputs/data/arxiv_ai_papers", dtype={"article_id": str}
+        f"{PROJECT_DIR}/inputs/data/arxiv_ai_papers.csv", dtype={"article_id": str}
     )
 
 
