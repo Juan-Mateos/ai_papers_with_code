@@ -1,8 +1,14 @@
 # Data getters
+import datetime
 import gzip
+import json
 
 import numpy as np
 import pandas as pd
+
+from ai_papers_with_code import PROJECT_DIR
+
+DATA_PATH = f"{PROJECT_DIR}/inputs/data"
 
 
 def make_year(x):
