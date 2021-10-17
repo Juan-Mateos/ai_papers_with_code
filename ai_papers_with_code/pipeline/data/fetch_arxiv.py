@@ -21,11 +21,11 @@ def main():
     pwc_bucket = s3.Bucket("ai-papers-with-code")
 
     for s3_file in pwc_bucket.objects.all():
-        logging.info(f"downloading {s3_file}")
+        logging.info(f"downloading {s3_file.key}")
 
-        with open(f"{PROJECT_DIR}/{s3_file}", "wb") as out:
-            pwc_bucket.download_fileobj(s3_file, out)
+        with open(f"{PROJECT_DIR}/inputs/data/{s3_file.key}", "wb") as out:
+            pwc_bucket.download_fileobj(s3_file.key, out)
 
 
-if name == "__main__":
+if __name__ == "__main__":
     main()
