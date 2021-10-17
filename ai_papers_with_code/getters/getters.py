@@ -119,6 +119,34 @@ def get_pwc_data():
 # arXiv scripts
 
 
+def fix_carnegie(institute):
+    """Fixes a bad match with carnegie mellon"""
+    logging.info("fixing bad carnegie match")
+
+    carnegie = institute.query("name=='Carnegie Mellon University Australia'")
+    no_carnegie = institute.query("name!='Carnegie Mellon University Australia'")
+
+    carnegie_fixed = []
+
+    for _id, r in carnegie.iterrows():
+
+        row = r.copy()
+        row["institute_id"] = "carnegie_fixed"
+        row["grid_id"] = "carnegie_fixed"
+        row["name"] = "Carnegie Mellon University"
+        row["lat"] = np.nan
+        row["lng"] = np.nan
+        row["city"] = "Pittsburgh"
+        row["country"] = "USA"
+        row["country_code"] = "US"
+
+        carnegie_fixed.append(row)
+
+    carnegie_fixed_df = pd.DataFrame(carnegie_fixed)
+
+    return pd.concat([no_carnegie, carnegie_fixed_df]).reset_index(drop=True)
+
+
 def add_author(art_data, art, org="deepmind"):
     """Adds a new institutional author to an article list of contributing institutes"""
 
@@ -168,8 +196,10 @@ def add_author(art_data, art, org="deepmind"):
 def make_institute_article_table():
     """Processes the institute data to incorporate deepmind and openai"""
 
-    institute = pd.read_csv(
-        f"{PROJECT_DIR}/inputs/data/arxiv_institutes.csv", dtype={"article_id": str}
+    institute = fix_carnegie(
+        pd.read_csv(
+            f"{PROJECT_DIR}/inputs/data/arxiv_institutes.csv", dtype={"article_id": str}
+        )
     )
 
     ai_ids = set(get_arxiv_papers().query("is_ai==True")["article_id"])
