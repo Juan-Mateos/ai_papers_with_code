@@ -10,6 +10,18 @@
   - Configure pre-commit
   - Configure metaflow to use AWS
 
+## Features
+
+### Papers with code
+
+#### Fetch data
+
+Run `python ai_papers_with_code/pipeline/data/fetch_pwc_data.py` to fetch the papers with code datasets.
+
+The data is saved in `inputs/data`.
+
+Use the getters in `ai_papers_with_code/getters/getters.py` to get papers with code tables.
+
 ## Contributor guidelines
 
 [Technical and working style guidelines](https://github.com/nestauk/ds-cookiecutter/blob/master/GUIDELINES.md)
