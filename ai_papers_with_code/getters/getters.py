@@ -50,6 +50,29 @@ def make_empty_list_na(df, variables):
     return df_
 
 
+def make_evaluation_table(evaluations):
+    """Flattens the evaluation json"""
+
+    eval_results = []
+
+    for area in evaluations:
+
+        task = area["task"]
+
+        if "datasets" in area.keys():
+
+            for d in area["datasets"]:
+
+                dataset = d["dataset"]
+                paper_df = pd.DataFrame(d["sota"]["rows"])
+                paper_df["task"] = task
+                paper_df["dataset"] = dataset
+                eval_results.append(paper_df)
+
+    evaluation_df = pd.concat(eval_results).reset_index(drop=True)
+    return evaluation_df
+
+
 def get_pwc_papers():
     """Get papers table"""
     # Read and parse the data
@@ -68,6 +91,12 @@ def get_pwc_papers():
         lambda x: make_month_year(x)
     )
     paper_df_clean["year"] = paper_df_clean["date"].apply(lambda x: make_year(x))
+
+    # Extract methods names from their dicts
+    paper_df_clean["methods_name"] = [
+        [x["name"] for x in m] if type(m) is list else np.nan
+        for m in paper_df_clean["methods"]
+    ]
 
     return paper_df_clean
 
@@ -184,7 +213,7 @@ def add_author(art_data, art, org="deepmind"):
             "San Francisco",
             "USA",
             "US",
-            "Not-profit",
+            "Nonprofit",
             np.nan,
             np.nan,
             np.nan,
@@ -304,3 +333,20 @@ def get_arxiv_institutes(processed=True):
         return pd.read_csv(
             f"{PROJECT_DIR}/inputs/data/arxiv_institutes.csv", dtype={"article_id": str}
         )
+
+
+def get_github_repos():
+    """Get GitHub repos"""
+
+    pwc_github_repos_df = pd.read_csv(
+        f"{PROJECT_DIR}/inputs/data/github_repos.csv", dtype={"paper_id": str}
+    )
+
+    pwc_github_repos_df["created_at"] = pd.to_datetime(
+        pwc_github_repos_df["created_at"]
+    )
+    pwc_github_repos_df["updated_at"] = pd.to_datetime(
+        pwc_github_repos_df["updated_at"]
+    )
+
+    return pwc_github_repos_df
