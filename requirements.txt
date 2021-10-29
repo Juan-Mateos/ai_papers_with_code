@@ -12,3 +12,4 @@ sh
 jupyterlab
 black
 bs4
+ratelim
